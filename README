@@ -2,3 +2,5 @@ Skeltrack video player
 ==============================
 
 Skeltrack video player is debug program for Skeltrack that enables you to play frame by frame a previously recorded Kinect video with gfreenect-tools'.
+
+Right now it requires a WIP version of Skeltrack with "SKELTRACK_JOINT_ID_SHOULDER_CENTER" and "SKELTRACK_JOINT_ID_CENTER" joints.

@@ -328,8 +328,8 @@ on_texture_draw (ClutterCairoTexture *texture,
 {
   guint width, height;
   ClutterColor *color;
-  SkeltrackJoint *head, *left_hand, *right_hand,
-    *left_shoulder, *right_shoulder, *left_elbow, *right_elbow;
+  SkeltrackJoint *head, *left_hand, *right_hand, *shoulder_center,
+    *left_shoulder, *right_shoulder, *left_elbow, *right_elbow, *centroid;
   SkeltrackJointList list;
 
   list = (SkeltrackJointList) current_skeleton->data;
@@ -346,10 +346,14 @@ on_texture_draw (ClutterCairoTexture *texture,
                                        SKELTRACK_JOINT_ID_LEFT_SHOULDER);
   right_shoulder = skeltrack_joint_list_get_joint (list,
                                        SKELTRACK_JOINT_ID_RIGHT_SHOULDER);
+  shoulder_center = skeltrack_joint_list_get_joint (list,
+                                       SKELTRACK_JOINT_ID_SHOULDER_CENTER);
   left_elbow = skeltrack_joint_list_get_joint (list,
                                                SKELTRACK_JOINT_ID_LEFT_ELBOW);
   right_elbow = skeltrack_joint_list_get_joint (list,
                                                 SKELTRACK_JOINT_ID_RIGHT_ELBOW);
+  centroid = skeltrack_joint_list_get_joint (list,
+                                             SKELTRACK_JOINT_ID_CENTER);
 
   /* Paint it white */
   clutter_cairo_texture_clear (texture);
@@ -360,11 +364,18 @@ on_texture_draw (ClutterCairoTexture *texture,
   cairo_fill (cairo);
   clutter_color_free (color);
 
+
+  connect_joints (cairo, head, shoulder_center, "#afafaf");
+
   paint_joint (cairo, head, 50000, "#FFF800");
 
-  connect_joints (cairo, left_shoulder, right_shoulder, "#afafaf");
+  connect_joints (cairo, shoulder_center, centroid, "#afafaf");
+
+  connect_joints (cairo, left_shoulder, shoulder_center, "#afafaf");
 
   connect_joints (cairo, left_shoulder, left_elbow, "#afafaf");
+
+  connect_joints (cairo, right_shoulder, shoulder_center, "#afafaf");
 
   connect_joints (cairo, right_shoulder, right_elbow, "#afafaf");
 
@@ -375,6 +386,7 @@ on_texture_draw (ClutterCairoTexture *texture,
   paint_joint (cairo, left_hand, 30000, "#C2FF00");
 
   paint_joint (cairo, right_hand, 30000, "#00FAFF");
+
 }
 
 static void
@@ -431,8 +443,8 @@ static gboolean
 paint_depth (guchar *buffer, guint width, guint height)
 {
   gchar *head_color, *left_shoulder_color, *right_shoulder_color,
-        *left_elbow_color, *right_elbow_color, *left_hand_color,
-        *right_hand_color;
+        *shoulder_center_color, *left_elbow_color, *right_elbow_color,
+        *left_hand_color, *right_hand_color, *centroid_color;
 
   head_color = "#ff0000";
   left_hand_color = "#00ff00";
@@ -441,9 +453,11 @@ paint_depth (guchar *buffer, guint width, guint height)
   right_elbow_color = "#9094FF";
   left_shoulder_color = "#125500";
   right_shoulder_color = "#000045";
+  shoulder_center_color = "#000000";
+  centroid_color = "#FFFB00";
 
-  SkeltrackJoint *head, *left_hand, *right_hand,
-    *left_shoulder, *right_shoulder, *left_elbow, *right_elbow;
+  SkeltrackJoint *head, *left_hand, *right_hand, *shoulder_center,
+    *left_shoulder, *right_shoulder, *left_elbow, *right_elbow, *centroid;
   SkeltrackJointList list;
 
   list = (SkeltrackJointList) current_skeleton->data;
@@ -460,10 +474,14 @@ paint_depth (guchar *buffer, guint width, guint height)
                                        SKELTRACK_JOINT_ID_LEFT_SHOULDER);
   right_shoulder = skeltrack_joint_list_get_joint (list,
                                        SKELTRACK_JOINT_ID_RIGHT_SHOULDER);
+  shoulder_center = skeltrack_joint_list_get_joint (list,
+                                       SKELTRACK_JOINT_ID_SHOULDER_CENTER);
   left_elbow = skeltrack_joint_list_get_joint (list,
                                                SKELTRACK_JOINT_ID_LEFT_ELBOW);
   right_elbow = skeltrack_joint_list_get_joint (list,
                                                 SKELTRACK_JOINT_ID_RIGHT_ELBOW);
+  centroid = skeltrack_joint_list_get_joint (list,
+                                             SKELTRACK_JOINT_ID_CENTER);
 
 
   if (head)
@@ -481,12 +499,18 @@ paint_depth (guchar *buffer, guint width, guint height)
   if (right_shoulder)
     draw_point (buffer, width, height, right_shoulder_color, right_shoulder->screen_x,
         right_shoulder->screen_y);
+  if (shoulder_center)
+    draw_point (buffer, width, height, shoulder_center_color, shoulder_center->screen_x,
+        shoulder_center->screen_y);
   if (left_elbow)
     draw_point (buffer, width, height, left_elbow_color, left_elbow->screen_x,
         left_elbow->screen_y);
   if (right_elbow)
     draw_point (buffer, width, height, right_elbow_color, right_elbow->screen_x,
         right_elbow->screen_y);
+  if (centroid)
+    draw_point (buffer, width, height, centroid_color, centroid->screen_x,
+        centroid->screen_y);
   GError *error = NULL;
 
   if (! clutter_texture_set_from_rgb_data (CLUTTER_TEXTURE (depth_tex),
