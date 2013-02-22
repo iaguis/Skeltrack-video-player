@@ -444,7 +444,8 @@ paint_depth (guchar *buffer, guint width, guint height)
 {
   gchar *head_color, *left_shoulder_color, *right_shoulder_color,
         *shoulder_center_color, *left_elbow_color, *right_elbow_color,
-        *left_hand_color, *right_hand_color, *centroid_color;
+        *left_hand_color, *right_hand_color, *centroid_color,
+        *left_hip_color, *right_hip_color;
 
   head_color = "#ff0000";
   left_hand_color = "#00ff00";
@@ -455,9 +456,12 @@ paint_depth (guchar *buffer, guint width, guint height)
   right_shoulder_color = "#000045";
   shoulder_center_color = "#000000";
   centroid_color = "#FFFB00";
+  left_hip_color = "#FF52DD";
+  right_hip_color = "#FF7040";
 
   SkeltrackJoint *head, *left_hand, *right_hand, *shoulder_center,
-    *left_shoulder, *right_shoulder, *left_elbow, *right_elbow, *centroid;
+    *left_shoulder, *right_shoulder, *left_elbow, *right_elbow, *centroid,
+    *right_hip, *left_hip;
   SkeltrackJointList list;
 
   list = (SkeltrackJointList) current_skeleton->data;
@@ -482,6 +486,10 @@ paint_depth (guchar *buffer, guint width, guint height)
                                                 SKELTRACK_JOINT_ID_RIGHT_ELBOW);
   centroid = skeltrack_joint_list_get_joint (list,
                                              SKELTRACK_JOINT_ID_CENTER);
+  right_hip = skeltrack_joint_list_get_joint (list,
+                                              SKELTRACK_JOINT_ID_RIGHT_HIP);
+  left_hip = skeltrack_joint_list_get_joint (list,
+                                             SKELTRACK_JOINT_ID_LEFT_HIP);
 
 
   if (head)
@@ -511,6 +519,13 @@ paint_depth (guchar *buffer, guint width, guint height)
   if (centroid)
     draw_point (buffer, width, height, centroid_color, centroid->screen_x,
         centroid->screen_y);
+  if (left_hip)
+    draw_point (buffer, width, height, left_hip_color, left_hip->screen_x,
+        left_hip->screen_y);
+  if (right_hip)
+    draw_point (buffer, width, height, right_hip_color, right_hip->screen_x,
+        right_hip->screen_y);
+
   GError *error = NULL;
 
   if (! clutter_texture_set_from_rgb_data (CLUTTER_TEXTURE (depth_tex),
