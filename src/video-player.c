@@ -445,7 +445,7 @@ paint_depth (guchar *buffer, guint width, guint height)
   gchar *head_color, *left_shoulder_color, *right_shoulder_color,
         *shoulder_center_color, *left_elbow_color, *right_elbow_color,
         *left_hand_color, *right_hand_color, *centroid_color,
-        *left_hip_color, *right_hip_color;
+        *left_hip_color, *right_hip_color, *left_foot_color, *right_foot_color;
 
   head_color = "#ff0000";
   left_hand_color = "#00ff00";
@@ -458,10 +458,12 @@ paint_depth (guchar *buffer, guint width, guint height)
   centroid_color = "#FFFB00";
   left_hip_color = "#FF52DD";
   right_hip_color = "#FF7040";
+  left_foot_color = "#FF94EA";
+  right_foot_color = "#FFFFFF";
 
   SkeltrackJoint *head, *left_hand, *right_hand, *shoulder_center,
     *left_shoulder, *right_shoulder, *left_elbow, *right_elbow, *centroid,
-    *right_hip, *left_hip;
+    *right_hip, *left_hip, *right_foot, *left_foot;
   SkeltrackJointList list;
 
   list = (SkeltrackJointList) current_skeleton->data;
@@ -490,6 +492,10 @@ paint_depth (guchar *buffer, guint width, guint height)
                                               SKELTRACK_JOINT_ID_RIGHT_HIP);
   left_hip = skeltrack_joint_list_get_joint (list,
                                              SKELTRACK_JOINT_ID_LEFT_HIP);
+  right_foot = skeltrack_joint_list_get_joint (list,
+                                              SKELTRACK_JOINT_ID_RIGHT_FOOT);
+  left_foot = skeltrack_joint_list_get_joint (list,
+                                             SKELTRACK_JOINT_ID_LEFT_FOOT);
 
 
   if (head)
@@ -525,6 +531,12 @@ paint_depth (guchar *buffer, guint width, guint height)
   if (right_hip)
     draw_point (buffer, width, height, right_hip_color, right_hip->screen_x,
         right_hip->screen_y);
+  if (left_foot)
+    draw_point (buffer, width, height, left_foot_color, left_foot->screen_x,
+        left_foot->screen_y);
+  if (right_foot)
+    draw_point (buffer, width, height, right_foot_color, right_foot->screen_x,
+        right_foot->screen_y);
 
   GError *error = NULL;
 
