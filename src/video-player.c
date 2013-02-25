@@ -191,7 +191,7 @@ get_frame_path_list (const gchar *directory)
     {
       g_debug ("ERROR: %s", error->message);
       g_clear_error (&error);
-      return NULL;
+      exit(1);
     }
 
   const gchar *current_file;
