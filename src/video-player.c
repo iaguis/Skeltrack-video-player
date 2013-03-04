@@ -574,6 +574,7 @@ track_video ()
        frame = g_list_next (frame))
     {
 
+      skeleton = SKELTRACK_SKELETON (skeltrack_skeleton_new ());
       guint16 *depth = (guint16 *) frame->data;
 
       BufferInfo *buffer_info = process_buffer (depth,
@@ -594,6 +595,7 @@ track_video ()
                                               &error);
 
       skeleton_list = g_list_append (skeleton_list, pose);
+      g_object_unref (skeleton);
       g_printf ("\n");
     }
 }
